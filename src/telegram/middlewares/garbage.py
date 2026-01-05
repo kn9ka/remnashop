@@ -3,7 +3,7 @@ from typing import Any, Awaitable, Callable, cast
 from aiogram.types import Message, TelegramObject
 from loguru import logger
 
-from src.application.dto import UserDTO
+from src.application.dto import UserDto
 from src.core.constants import USER_KEY
 from src.core.enums import Command, MiddlewareEventType
 
@@ -20,7 +20,7 @@ class GarbageMiddleware(EventTypedMiddleware):
         data: dict[str, Any],
     ) -> Any:
         message = cast(Message, event)
-        user: UserDTO = data[USER_KEY]
+        user: UserDto = data[USER_KEY]
 
         if message.text != f"/{Command.START.value.command}":
             await message.delete()

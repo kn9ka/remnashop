@@ -2,6 +2,7 @@ from .base import BaseEvent, SystemEvent, UserEvent
 from .system import (
     BotShutdownEvent,
     BotStartupEvent,
+    BotUpdateEvent,
     ErrorEvent,
     RemnawaveErrorEvent,
     UserRegisteredEvent,
@@ -14,6 +15,7 @@ __all__ = [
     "UserEvent",
     "BotShutdownEvent",
     "BotStartupEvent",
+    "BotUpdateEvent",
     "ErrorEvent",
     "RemnawaveErrorEvent",
     "UserRegisteredEvent",

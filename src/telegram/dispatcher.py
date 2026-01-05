@@ -9,7 +9,7 @@ from src.infrastructure.common import json
 from src.telegram.filters import setup_global_filters
 from src.telegram.message_manager import MessageManager
 from src.telegram.middlewares import setup_middlewares
-from src.telegram.routers import setup_error_handlers, setup_routers
+from src.telegram.routers import setup_error_handler, setup_routers
 
 
 def get_dispatcher(config: AppConfig) -> Dispatcher:
@@ -39,8 +39,8 @@ def get_bg_manager_factory(dispatcher: Dispatcher) -> BgManagerFactory:
 
 
 def setup_dispatcher(dispatcher: Dispatcher) -> None:
-    setup_middlewares(router=dispatcher)
-    setup_global_filters(router=dispatcher)
-    setup_routers(router=dispatcher)
-    setup_error_handlers(router=dispatcher)
+    setup_middlewares(dispatcher)
+    setup_global_filters(dispatcher)
+    setup_routers(dispatcher)
+    setup_error_handler(dispatcher)
     logger.info("Dispatcher layers have been configured")

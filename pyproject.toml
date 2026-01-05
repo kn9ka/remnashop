@@ -10,7 +10,7 @@ dependencies = [
     "greenlet>=3.2.4",
     "uvicorn>=0.38.0",
     "fastapi>=0.120.2",
-    "httpx>=0.28.1",
+    "remnapy>=2.3.3",
     #
     "dishka~=1.7.2",
     "adaptix==3.0.0b11",
@@ -93,7 +93,7 @@ module = ["fluentogram.*", "remnawave.*", "qrcode.*", "remnapy.*"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["app.bot.handlers.*"]
+module = ["app.telegram.handlers.*"]
 strict_optional = false
 warn_return_any = false
 disable_error_code = ["union-attr"]

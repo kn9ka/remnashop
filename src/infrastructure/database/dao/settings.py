@@ -6,11 +6,11 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.dto import (
-    AccessSettingsDTO,
-    NotificationsSettingsDTO,
-    ReferralSettingsDTO,
-    RequirementSettingsDTO,
-    SettingsDTO,
+    AccessSettingsDto,
+    NotificationsSettingsDto,
+    ReferralSettingsDto,
+    RequirementSettingsDto,
+    SettingsDto,
 )
 from src.application.protocols.dao import SettingsDAO
 from src.core.constants import TTL_6H
@@ -27,19 +27,19 @@ class SettingsDAOImpl(SettingsDAO):
 
         self._convert_to_dto = get_converter(
             Settings,
-            SettingsDTO,
+            SettingsDto,
             recipe=[
-                coercer(dict, AccessSettingsDTO, retort.get_loader(AccessSettingsDTO)),
-                coercer(dict, RequirementSettingsDTO, retort.get_loader(RequirementSettingsDTO)),
+                coercer(dict, AccessSettingsDto, retort.get_loader(AccessSettingsDto)),
+                coercer(dict, RequirementSettingsDto, retort.get_loader(RequirementSettingsDto)),
                 coercer(
-                    dict, NotificationsSettingsDTO, retort.get_loader(NotificationsSettingsDTO)
+                    dict, NotificationsSettingsDto, retort.get_loader(NotificationsSettingsDto)
                 ),
-                coercer(dict, ReferralSettingsDTO, retort.get_loader(ReferralSettingsDTO)),
+                coercer(dict, ReferralSettingsDto, retort.get_loader(ReferralSettingsDto)),
             ],
         )
 
-    async def create_default(self) -> SettingsDTO:
-        settings_data = self.retort.dump(SettingsDTO())
+    async def create_default(self) -> SettingsDto:
+        settings_data = self.retort.dump(SettingsDto())
         db_settings = Settings(**settings_data)
         self.session.add(db_settings)
 
@@ -50,7 +50,7 @@ class SettingsDAOImpl(SettingsDAO):
         return self._convert_to_dto(db_settings)
 
     @provide_cache(prefix=SETTINGS_PREFIX, ttl=TTL_6H)
-    async def get(self) -> SettingsDTO:
+    async def get(self) -> SettingsDto:
         stmt = select(Settings).limit(1)
         db_settings = await self.session.scalar(stmt)
 
@@ -62,7 +62,7 @@ class SettingsDAOImpl(SettingsDAO):
         return self._convert_to_dto(db_settings)
 
     @invalidate_cache(key_builder=SETTINGS_PREFIX)
-    async def update(self, dto: SettingsDTO) -> SettingsDTO:
+    async def update(self, dto: SettingsDto) -> SettingsDto:
         if not dto.changed_data:
             logger.warning("No changes detected in settings, skipping update")
             return await self.get()

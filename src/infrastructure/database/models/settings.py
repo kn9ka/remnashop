@@ -1,49 +1,21 @@
 from typing import Any
 
-from sqlalchemy import Enum, Integer
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.enums import Currency
 
-from .base import BaseSQL
+from .base import BaseSql
 from .timestamp import TimestampMixin
 
 
-class Settings(BaseSQL, TimestampMixin):
+class Settings(BaseSql, TimestampMixin):
     __tablename__ = "settings"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    default_currency: Mapped[Currency] = mapped_column(
-        Enum(
-            Currency,
-            name="currency",
-            native_enum=True,
-        ),
-        nullable=False,
-    )
+    default_currency: Mapped[Currency]
 
-    access: Mapped[dict[str, Any]] = mapped_column(
-        JSONB,
-        nullable=False,
-        server_default="{}",
-    )
-
-    requirements: Mapped[dict[str, Any]] = mapped_column(
-        JSONB,
-        nullable=False,
-        server_default="{}",
-    )
-
-    notifications: Mapped[dict[str, Any]] = mapped_column(
-        JSONB,
-        nullable=False,
-        server_default="{}",
-    )
-
-    referral: Mapped[dict[str, Any]] = mapped_column(
-        JSONB,
-        nullable=False,
-        server_default="{}",
-    )
+    access: Mapped[dict[str, Any]]
+    requirements: Mapped[dict[str, Any]]
+    notifications: Mapped[dict[str, Any]]
+    referral: Mapped[dict[str, Any]]

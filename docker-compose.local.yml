@@ -68,7 +68,6 @@ services:
         --appendonly no
         --maxmemory-policy noeviction
         --loglevel warning
-        --requirepass ${REDIS_PASSWORD}
 
     volumes:
       - remnashop-redis-data:/data

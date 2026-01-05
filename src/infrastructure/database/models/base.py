@@ -1,5 +1,59 @@
-from sqlalchemy.orm import DeclarativeBase
+from datetime import datetime
+from typing import Any
+from uuid import UUID
+
+from remnapy.enums.users import TrafficLimitStrategy
+from sqlalchemy import ARRAY, DateTime, Enum
+from sqlalchemy import UUID as PG_UUID
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import DeclarativeBase, registry
+
+from src.core.enums import (
+    BroadcastAudience,
+    BroadcastMessageStatus,
+    BroadcastStatus,
+    Currency,
+    Locale,
+    PaymentGatewayType,
+    PlanAvailability,
+    PlanType,
+    PurchaseType,
+    ReferralAccrualStrategy,
+    ReferralLevel,
+    ReferralRewardStrategy,
+    ReferralRewardType,
+    SubscriptionStatus,
+    TransactionStatus,
+    UserRole,
+)
+
+mapper_registry = registry(
+    type_annotation_map={
+        dict[str, Any]: JSONB,
+        UUID: PG_UUID,
+        list[UUID]: ARRAY(PG_UUID),
+        datetime: DateTime(timezone=True),
+        #
+        Locale: Enum(Locale, name="locale"),
+        UserRole: Enum(UserRole, name="user_role"),
+        Currency: Enum(Currency, name="currency"),
+        PaymentGatewayType: Enum(PaymentGatewayType, name="payment_gateway_type"),
+        PurchaseType: Enum(PurchaseType, name="purchasetype"),
+        TransactionStatus: Enum(TransactionStatus, name="transaction_status"),
+        SubscriptionStatus: Enum(SubscriptionStatus, name="subscription_status"),
+        TrafficLimitStrategy: Enum(TrafficLimitStrategy, name="traffic_limit_strategy"),
+        PlanAvailability: Enum(PlanAvailability, name="plan_availability"),
+        PlanType: Enum(PlanType, name="plan_type"),
+        BroadcastStatus: Enum(BroadcastStatus, name="broadcast_status"),
+        BroadcastAudience: Enum(BroadcastAudience, name="broadcast_audience"),
+        BroadcastMessageStatus: Enum(BroadcastMessageStatus, name="broadcast_message_status"),
+        ReferralAccrualStrategy: Enum(ReferralAccrualStrategy, name="referral_accrual_strategy"),
+        ReferralLevel: Enum(ReferralLevel, name="referral_level"),
+        ReferralRewardStrategy: Enum(ReferralRewardStrategy, name="referral_reward_strategy"),
+        ReferralRewardType: Enum(ReferralRewardType, name="referral_reward_type"),
+    }
+)
 
 
-class BaseSQL(DeclarativeBase):
-    pass
+class BaseSql(DeclarativeBase):
+    registry = mapper_registry

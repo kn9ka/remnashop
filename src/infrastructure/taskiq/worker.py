@@ -4,10 +4,10 @@ from dishka.integrations.taskiq import setup_dishka as setup_taskiq_dishka
 from taskiq import TaskiqEvents, TaskiqState
 from taskiq_redis import RedisStreamBroker
 
+from src.application.protocols import EventSubscriber
 from src.core.config import AppConfig
 from src.core.logger import setup_logger
 from src.infrastructure.di import create_container
-from src.infrastructure.services.event_bus import EventBusImpl
 from src.telegram.dispatcher import get_bg_manager_factory, get_dispatcher, setup_dispatcher
 
 from .broker import broker
@@ -30,13 +30,13 @@ def worker() -> RedisStreamBroker:
 
     @broker.on_event(TaskiqEvents.WORKER_STARTUP)
     async def startup(state: TaskiqState) -> None:
-        event_bus = await container.get(EventBusImpl)
+        event_bus = await container.get(EventSubscriber)
         event_bus.set_container_factory(lambda: container)
         event_bus.autodiscover()
 
     @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)
     async def shutdown(state: TaskiqState) -> None:
-        event_bus = await container.get(EventBusImpl)
+        event_bus = await container.get(EventSubscriber)
         await event_bus.shutdown()
 
     return broker

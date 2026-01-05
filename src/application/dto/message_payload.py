@@ -4,11 +4,11 @@ from typing import Any, Optional
 from src.core.enums import MediaType, MessageEffectId
 from src.core.types import AnyKeyboard, AnyMedia
 
-from .base import BaseDTO
+from .base import BaseDto
 
 
 @dataclass(kw_only=True)
-class MessagePayloadDTO(BaseDTO):
+class MessagePayloadDto(BaseDto):
     i18n_key: str
     i18n_kwargs: dict[str, Any] = field(default_factory=dict)
 

@@ -3,7 +3,7 @@ from typing import Optional
 
 
 @dataclass(frozen=True, kw_only=True)
-class BuildInfoDTO:
+class BuildInfoDto:
     has_build: Optional[bool] = field(default=None)
     time: Optional[str] = field(default=None)
     branch: Optional[str] = field(default=None)

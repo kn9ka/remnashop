@@ -6,7 +6,7 @@ from dishka.integrations.aiogram import AiogramMiddlewareData
 from fluentogram.storage import FileStorage
 from loguru import logger
 
-from src.application.dto import UserDTO
+from src.application.dto import UserDto
 from src.application.protocols import TranslatorHub as TranslatorHubProtocol
 from src.application.protocols import TranslatorRunner as TranslatorRunnerProtocol
 from src.core.config import AppConfig
@@ -53,7 +53,7 @@ class I18nProvider(Provider):
         translator_hub: TranslatorHubProtocol,
         middleware_data: AiogramMiddlewareData,
     ) -> TranslatorRunnerProtocol:
-        user: Optional[UserDTO] = middleware_data.get(USER_KEY)
+        user: Optional[UserDto] = middleware_data.get(USER_KEY)
         locale = user.language if user else config.default_locale
 
         if user:

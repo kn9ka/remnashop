@@ -3,10 +3,16 @@ from typing import Any, Awaitable, Callable, Optional, cast
 from aiogram.types import ErrorEvent as AiogramErrorEvent
 from aiogram.types import TelegramObject
 from aiogram.types import User as AiogramUser
+from aiogram_dialog.api.exceptions import (
+    InvalidStackIdError,
+    OutdatedIntent,
+    UnknownIntent,
+    UnknownState,
+)
 from dishka import AsyncContainer
 
 from src.application.events import ErrorEvent
-from src.application.protocols.event_bus import EventPublisher
+from src.application.protocols import EventPublisher
 from src.core.config import AppConfig
 from src.core.constants import CONFIG_KEY, CONTAINER_KEY
 from src.core.enums import MiddlewareEventType
@@ -24,6 +30,15 @@ class ErrorMiddleware(EventTypedMiddleware):
         data: dict[str, Any],
     ) -> Any:
         event = cast(AiogramErrorEvent, event)
+
+        if type(event.exception) in [
+            InvalidStackIdError,
+            OutdatedIntent,
+            UnknownIntent,
+            UnknownState,
+        ]:
+            return await handler(event, data)
+
         aiogram_user: Optional[AiogramUser] = self._get_aiogram_user(data)
         config: AppConfig = data[CONFIG_KEY]
 

@@ -1,0 +1,35 @@
+from typing import Optional, Protocol, Sequence
+
+from src.application.dto import ReferralDto, ReferralRewardDto
+from src.core.enums import ReferralRewardType
+
+
+class ReferralDAO(Protocol):
+    async def create_referral(self, referral: ReferralDto) -> ReferralDto: ...
+
+    async def get_by_referred_id(self, referred_id: int) -> Optional[ReferralDto]: ...
+
+    async def get_referrals_count(self, referrer_id: int) -> int: ...
+
+    async def get_referrals_list(
+        self,
+        referrer_id: int,
+        limit: int = 100,
+        offset: int = 0,
+    ) -> Sequence[ReferralDto]: ...
+
+    async def create_reward(
+        self,
+        reward: ReferralRewardDto,
+        referral_id: int,
+    ) -> ReferralRewardDto: ...
+
+    async def get_pending_rewards(self) -> Sequence[ReferralRewardDto]: ...
+
+    async def mark_reward_as_issued(self, reward_id: int) -> None: ...
+
+    async def get_total_rewards_amount(
+        self,
+        user_id: int,
+        reward_type: ReferralRewardType,
+    ) -> int: ...

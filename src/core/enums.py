@@ -10,6 +10,79 @@ class UpperStrEnum(StrEnum):
         return name
 
 
+class BroadcastStatus(UpperStrEnum):
+    PROCESSING = auto()
+    COMPLETED = auto()
+    CANCELED = auto()
+    DELETED = auto()
+    ERROR = auto()
+
+
+class BroadcastMessageStatus(UpperStrEnum):
+    SENT = auto()
+    FAILED = auto()
+    EDITED = auto()
+    DELETED = auto()
+    PENDING = auto()
+
+
+class BroadcastAudience(UpperStrEnum):
+    ALL = auto()
+    PLAN = auto()
+    SUBSCRIBED = auto()
+    UNSUBSCRIBED = auto()
+    EXPIRED = auto()
+    TRIAL = auto()
+
+
+class PlanType(UpperStrEnum):
+    TRAFFIC = auto()
+    DEVICES = auto()
+    BOTH = auto()
+    UNLIMITED = auto()
+
+
+class PlanAvailability(UpperStrEnum):
+    ALL = auto()
+    NEW = auto()
+    EXISTING = auto()
+    INVITED = auto()
+    ALLOWED = auto()
+    LINK = auto()
+
+
+class PaymentGatewayType(UpperStrEnum):
+    TELEGRAM_STARS = auto()
+    YOOKASSA = auto()
+    YOOMONEY = auto()
+    CRYPTOMUS = auto()
+    HELEKET = auto()
+    CRYPTOPAY = auto()
+    ROBOKASSA = auto()
+
+
+class PurchaseType(UpperStrEnum):
+    NEW = auto()
+    RENEW = auto()
+    CHANGE = auto()
+
+
+class TransactionStatus(UpperStrEnum):
+    PENDING = auto()
+    COMPLETED = auto()
+    CANCELED = auto()
+    REFUNDED = auto()
+    FAILED = auto()
+
+
+class SubscriptionStatus(UpperStrEnum):
+    ACTIVE = auto()
+    DISABLED = auto()
+    LIMITED = auto()
+    EXPIRED = auto()
+    DELETED = auto()
+
+
 class ReferralRewardType(UpperStrEnum):
     POINTS = auto()
     EXTRA_DAYS = auto()
@@ -150,6 +223,20 @@ class Command(Enum):
     START = BotCommand(command="start", description="cmd-start")
     PAYSUPPORT = BotCommand(command="paysupport", description="cmd-paysupport")
     HELP = BotCommand(command="help", description="cmd-help")
+
+
+# https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/parameters-values#vat-codes
+class YookassaVatCode(IntEnum):
+    VAT_CODE_01 = auto()  # Without VAT
+    VAT_CODE_02 = auto()  # VAT at 0% rate
+    VAT_CODE_03 = auto()  # VAT at 10% rate
+    VAT_CODE_04 = auto()  # VAT at 20% rate
+    VAT_CODE_05 = auto()  # VAT at calculated rate 10/110
+    VAT_CODE_06 = auto()  # VAT at calculated rate 20/120
+    VAT_CODE_07 = auto()  # VAT at 5% rate
+    VAT_CODE_08 = auto()  # VAT at 7% rate
+    VAT_CODE_09 = auto()  # VAT at calculated rate 5/105
+    VAT_CODE_10 = auto()  # VAT at calculated rate 7/107
 
 
 # https://docs.aiogram.dev/en/latest/api/types/update.html

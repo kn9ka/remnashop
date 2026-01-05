@@ -4,12 +4,12 @@ from typing import Any, Optional
 
 
 @dataclass(kw_only=True)
-class BaseDTO:
+class BaseDto:
     pass
 
 
 @dataclass(kw_only=True)
-class TrackableDTO(BaseDTO):
+class TrackableDto(BaseDto):
     id: Optional[int] = field(default=None)
     created_at: Optional[datetime] = field(default=None)
     updated_at: Optional[datetime] = field(default=None)

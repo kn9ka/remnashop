@@ -74,9 +74,10 @@ event-bot-update =
 
     <b>🔅 Событие: Обнаружено обновление Remnashop!</b>
 
+    <b>📑 Версии:</b>
     <blockquote>
-    • <b>Текущая версия</b>: { $local_version }
-    • <b>Доступная версия</b>: { $remote_version }
+    • <b>Текущая</b>: { $local_version }
+    • <b>Последняя</b>: { $remote_version }
     </blockquote>
 
 event-user-registered =

@@ -15,7 +15,7 @@ from src.application.events import (
 )
 from src.application.use_cases import CommandUseCase, SettingsUseCase, WebhookUseCase
 from src.core.config import AppConfig
-from src.infrastructure.services.event_bus import EventBusImpl
+from src.infrastructure.services import EventBusImpl
 from src.web.endpoints import TelegramWebhookEndpoint
 
 

@@ -1,15 +1,16 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Self
 
 from src.core.enums import Locale, UserRole
 from src.core.utils.time import datetime_now
 
-from .base import TrackableDTO
+from .base import TrackableDto
 
 
 @dataclass(kw_only=True)
-class UserDTO(TrackableDTO):
+class UserDto(TrackableDto):
     telegram_id: int
+
     username: Optional[str] = None
     referral_code: str = ""
 
@@ -47,3 +48,11 @@ class UserDTO(TrackableDTO):
     @property
     def log(self) -> str:
         return f"[{self.role}:{self.telegram_id} ({self.name})]"
+
+    @classmethod
+    def temp_user(cls, telegram_id: int, name: str = "TempUser") -> Self:
+        return cls(telegram_id=telegram_id, name=name, role=UserRole.USER)
+
+    @classmethod
+    def temp_root(cls, telegram_id: int) -> Self:
+        return cls(telegram_id=telegram_id, name="TempRoot", role=UserRole.ROOT)

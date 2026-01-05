@@ -1,12 +1,17 @@
-from typing import Any, Callable, Protocol, Type
+from typing import Callable, Protocol
 
-from src.application.events.base import BaseEvent
+from dishka import AsyncContainer
+
+from src.application.events import BaseEvent
 
 
 class EventPublisher(Protocol):
     async def publish(self, event: BaseEvent) -> None: ...
 
 
-class EventSubscriber(
-    Protocol
-): ...  # def subscribe(self, event_type: Type[BaseEvent], handler: Callable[..., Any]) -> None: ...
+class EventSubscriber(Protocol):
+    def autodiscover(self) -> None: ...
+
+    async def shutdown(self) -> None: ...
+
+    def set_container_factory(self, factory: Callable[[], AsyncContainer]) -> None: ...

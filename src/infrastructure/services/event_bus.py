@@ -8,7 +8,7 @@ from dishka.registry import Registry
 from loguru import logger
 
 from src.application.events import BaseEvent
-from src.application.protocols.event_bus import EventPublisher, EventSubscriber
+from src.application.protocols import EventPublisher, EventSubscriber
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -86,6 +86,7 @@ class EventBusImpl(EventPublisher, EventSubscriber):
                     f"Error handling event '{type(event).__name__}' "
                     f"in '{service_class.__name__}': '{e}'"
                 )
+                raise
 
     def autodiscover(self) -> None:
         logger.info("Starting events autodiscovery")

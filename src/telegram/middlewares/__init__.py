@@ -17,6 +17,7 @@ def setup_middlewares(router: Router) -> None:
         UserMiddleware(),
         ThrottlingMiddleware(),
     ]
+
     inner_middlewares: list[EventTypedMiddleware] = [
         GarbageMiddleware(),
     ]

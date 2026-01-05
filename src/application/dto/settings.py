@@ -16,7 +16,7 @@ from src.core.enums import (
 )
 from src.core.types import NotificationType
 
-from .base import TrackableDTO
+from .base import TrackableDto
 
 
 def get_default_notifications() -> dict[str, bool]:
@@ -26,7 +26,7 @@ def get_default_notifications() -> dict[str, bool]:
 
 
 @dataclass(kw_only=True)
-class AccessSettingsDTO:
+class AccessSettingsDto:
     mode: AccessMode = AccessMode.PUBLIC
     registration_allowed: bool = True
     purchases_allowed: bool = True
@@ -38,7 +38,7 @@ class AccessSettingsDTO:
 
 
 @dataclass(kw_only=True)
-class RequirementSettingsDTO:
+class RequirementSettingsDto:
     rules_required: bool = False
     channel_required: bool = False
 
@@ -51,15 +51,15 @@ class RequirementSettingsDTO:
         return self.channel_link.get_secret_value().startswith("@")
 
     @property
-    def get_url_channel_link(self) -> str:
+    def channel_url(self) -> str:
+        link = self.channel_link.get_secret_value()
         if self.channel_has_username:
-            return f"{T_ME}{self.channel_link.get_secret_value()[1:]}"
-        else:
-            return self.channel_link.get_secret_value()
+            return f"{T_ME}{link[1:]}"
+        return link
 
 
 @dataclass(kw_only=True)
-class NotificationsSettingsDTO:
+class NotificationsSettingsDto:
     settings: dict[str, bool] = field(default_factory=get_default_notifications)
 
     def is_enabled(self, ntf_type: NotificationType) -> bool:
@@ -70,7 +70,7 @@ class NotificationsSettingsDTO:
 
 
 @dataclass(kw_only=True)
-class ReferralRewardSettingsDTO:
+class ReferralRewardSettingsDto:
     type: ReferralRewardType = ReferralRewardType.EXTRA_DAYS
     strategy: ReferralRewardStrategy = ReferralRewardStrategy.AMOUNT
     config: dict[ReferralLevel, int] = field(default_factory=lambda: {ReferralLevel.FIRST: 5})
@@ -90,17 +90,17 @@ class ReferralRewardSettingsDTO:
 
 
 @dataclass(kw_only=True)
-class ReferralSettingsDTO:
+class ReferralSettingsDto:
     enable: bool = True
     level: ReferralLevel = ReferralLevel.FIRST
     accrual_strategy: ReferralAccrualStrategy = ReferralAccrualStrategy.ON_FIRST_PAYMENT
-    reward: ReferralRewardSettingsDTO = field(default_factory=ReferralRewardSettingsDTO)
+    reward: ReferralRewardSettingsDto = field(default_factory=ReferralRewardSettingsDto)
 
 
 @dataclass(kw_only=True)
-class SettingsDTO(TrackableDTO):
+class SettingsDto(TrackableDto):
     default_currency: Currency = Currency.XTR
-    access: AccessSettingsDTO = field(default_factory=AccessSettingsDTO)
-    requirements: RequirementSettingsDTO = field(default_factory=RequirementSettingsDTO)
-    notifications: NotificationsSettingsDTO = field(default_factory=NotificationsSettingsDTO)
-    referral: ReferralSettingsDTO = field(default_factory=ReferralSettingsDTO)
+    access: AccessSettingsDto = field(default_factory=AccessSettingsDto)
+    requirements: RequirementSettingsDto = field(default_factory=RequirementSettingsDto)
+    notifications: NotificationsSettingsDto = field(default_factory=NotificationsSettingsDto)
+    referral: ReferralSettingsDto = field(default_factory=ReferralSettingsDto)

@@ -84,5 +84,5 @@ class CryptographerImpl(Cryptographer):
         full_code = self.base62_encode(code_int)
 
         result = full_code[:length].rjust(length, "0")
-        logger.debug(f"Short code generated for data '{data}' with length '{length}'")
+        logger.debug(f"Short code '{result}' generated for data '{data}'")
         return result

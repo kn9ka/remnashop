@@ -6,7 +6,7 @@ from dishka import AsyncContainer
 from loguru import logger
 
 from src.application.use_cases import UserUseCase
-from src.core.constants import CONTAINER_KEY
+from src.core.constants import CONTAINER_KEY, USER_KEY
 from src.core.enums import MiddlewareEventType
 
 from .base import EventTypedMiddleware
@@ -38,6 +38,6 @@ class UserMiddleware(EventTypedMiddleware):
         user_use_case: UserUseCase = await container.get(UserUseCase)
 
         user = await user_use_case.get_or_create_user(aiogram_user)
-        data["user"] = user
+        data[USER_KEY] = user
 
         return await handler(event, data)

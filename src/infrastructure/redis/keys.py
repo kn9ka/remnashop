@@ -27,3 +27,8 @@ class UserRoleKey(StorageKey, prefix="user_list"):
 class WebhookLockKey(StorageKey, prefix="webhook_lock"):
     bot_id: int
     webhook_hash: str
+
+
+@dataclass(frozen=True)
+class LatestNotifiedVersionKey(StorageKey, prefix="latest_notified_version"):
+    version: str

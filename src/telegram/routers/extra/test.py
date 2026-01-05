@@ -8,11 +8,12 @@ from dishka import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 from loguru import logger
 
-from src.application.dto import UserDTO
-from src.application.protocols.translator import TranslatorRunner
-from src.application.use_cases.settings import SettingsUseCase
+from src.application.dto import UserDto
+from src.application.protocols import TranslatorRunner
+from src.application.use_cases import SettingsUseCase
 from src.core.config import AppConfig
 from src.infrastructure.taskiq.tasks.test import send_error_task
+from src.infrastructure.taskiq.tasks.update import check_bot_update
 from src.telegram.filters import RootFilter
 
 router = Router(name=__name__)
@@ -22,14 +23,12 @@ router = Router(name=__name__)
 @router.message(Command("test"), RootFilter())
 async def on_test_command(
     message: Message,
-    user: UserDTO,
+    user: UserDto,
     config: AppConfig,
     settings_use_case: FromDishka[SettingsUseCase],
 ) -> None:
     logger.info(f"{user.log} Test command executed")
     # raise UnknownState
-    #
-    await send_error_task.kiq()
 
 
 @inject

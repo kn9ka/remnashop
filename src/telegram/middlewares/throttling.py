@@ -5,8 +5,8 @@ from cachetools import TTLCache
 from dishka import AsyncContainer
 from loguru import logger
 
-from src.application.dto import MessagePayloadDTO, UserDTO
-from src.application.services import NotificationService
+from src.application.dto import MessagePayloadDto, UserDto
+from src.application.protocols import Notifier
 from src.core.constants import CONTAINER_KEY, USER_KEY
 from src.core.enums import MiddlewareEventType
 
@@ -26,14 +26,14 @@ class ThrottlingMiddleware(EventTypedMiddleware):
         data: dict[str, Any],
     ) -> Any:
         container: AsyncContainer = data[CONTAINER_KEY]
-        user: UserDTO = data[USER_KEY]
+        user: UserDto = data[USER_KEY]
 
-        notification_service: NotificationService = await container.get(NotificationService)
+        notification_service: Notifier = await container.get(Notifier)
 
         if user.telegram_id in self.cache:
             await notification_service.notify_user(
                 user=user,
-                payload=MessagePayloadDTO(i18n_key="ntf-throttling-many-requests"),
+                payload=MessagePayloadDto(i18n_key="ntf-throttling-many-requests"),
             )
             logger.warning(f"User '{user.telegram_id}' throttled")
             return

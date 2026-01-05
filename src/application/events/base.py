@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID, uuid4
 
-from src.application.dto import MessagePayloadDTO
+from src.application.dto import MessagePayloadDto
 from src.core.types import NotificationType
 from src.core.utils.time import datetime_now
 
@@ -23,8 +23,8 @@ class BaseEvent:
     def event_key(self) -> str:
         return f"event-{self.notification_type.value.lower().replace('_', '-')}"
 
-    def as_payload(self, *args: Any, **kwargs: Any) -> "MessagePayloadDTO":
-        return MessagePayloadDTO(
+    def as_payload(self, *args: Any, **kwargs: Any) -> "MessagePayloadDto":
+        return MessagePayloadDto(
             i18n_key=self.event_key,
             i18n_kwargs=asdict(self),
             disable_default_markup=False,

@@ -6,7 +6,7 @@ from taskiq import TaskiqMessage, TaskiqResult
 from taskiq.abc.middleware import TaskiqMiddleware
 
 from src.application.events import ErrorEvent
-from src.application.protocols.event_bus import EventPublisher
+from src.application.protocols import EventPublisher
 from src.core.config import AppConfig
 
 

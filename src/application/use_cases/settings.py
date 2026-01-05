@@ -2,7 +2,7 @@ from typing import Any
 
 from loguru import logger
 
-from src.application.dto import SettingsDTO
+from src.application.dto import SettingsDto
 from src.application.protocols.dao import SettingsDAO
 from src.application.protocols.uow import UnitOfWork
 from src.core.types import NotificationType
@@ -17,11 +17,11 @@ class SettingsUseCase:
         self.dao = dao
         self.uow = uow
 
-    async def get_settings(self) -> SettingsDTO:
+    async def get_settings(self) -> SettingsDto:
         async with self.uow:
             return await self.dao.get()
 
-    async def toggle_notification(self, ntf_type: NotificationType) -> SettingsDTO:
+    async def toggle_notification(self, ntf_type: NotificationType) -> SettingsDto:
         async with self.uow:
             settings = await self.dao.get()
             settings.notifications.toggle(ntf_type)
@@ -31,7 +31,7 @@ class SettingsUseCase:
         logger.info(f"Notification '{ntf_type}' toggled in settings")
         return updated_settings
 
-    async def update_access_settings(self, **kwargs: Any) -> SettingsDTO:
+    async def update_access_settings(self, **kwargs: Any) -> SettingsDto:
         async with self.uow:
             settings = await self.dao.get()
 

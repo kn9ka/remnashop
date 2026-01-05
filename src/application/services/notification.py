@@ -15,7 +15,7 @@ from aiogram.utils.formatting import Text
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from loguru import logger
 
-from src.application.dto import MessagePayloadDTO, SettingsDTO, UserDTO
+from src.application.dto import MessagePayloadDto, SettingsDto, UserDto
 from src.application.events import ErrorEvent, SystemEvent
 from src.application.protocols import Notifier, TranslatorHub
 from src.application.protocols.dao import SettingsDAO, UserDAO
@@ -23,6 +23,7 @@ from src.core.config import AppConfig
 from src.core.enums import Locale, UserRole
 from src.core.types import AnyKeyboard
 from src.infrastructure.services.event_bus import on_event
+from src.telegram.states import Notification
 
 
 class NotificationService(Notifier):
@@ -40,12 +41,12 @@ class NotificationService(Notifier):
         self.user_dao = user_dao
         self.settings_dao = settings_dao
 
-    async def notify_user(self, user: UserDTO, payload: MessagePayloadDTO) -> Optional[Message]:
+    async def notify_user(self, user: UserDto, payload: MessagePayloadDto) -> Optional[Message]:
         return await self._send_message(user, payload)
 
     async def notify_admins(
         self,
-        payload: MessagePayloadDTO,
+        payload: MessagePayloadDto,
         roles: list[UserRole] = [UserRole.ROOT, UserRole.DEV, UserRole.ADMIN],
     ) -> None:
         users = await self.user_dao.filter_by_role(roles)
@@ -60,7 +61,7 @@ class NotificationService(Notifier):
     async def on_system_event(self, event: SystemEvent) -> None:
         logger.info(f"Received '{event.event_type}' event")
 
-        settings: SettingsDTO = await self.settings_dao.get()
+        settings: SettingsDto = await self.settings_dao.get()
         if not settings.notifications.is_enabled(event.notification_type):
             logger.info(f"Notification for '{event.notification_type}' is disabled, skipping")
             return
@@ -92,14 +93,34 @@ class NotificationService(Notifier):
             roles=[UserRole.ROOT, UserRole.DEV],
         )
 
-    async def _broadcast(self, users: Sequence[UserDTO], payload: MessagePayloadDTO) -> None:
+    async def delete_notification(self, chat_id: int, message_id: int) -> None:
+        try:
+            await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
+            logger.debug(f"Notification '{message_id}' for chat '{chat_id}' deleted")
+        except Exception as e:
+            logger.error(f"Failed to delete notification '{message_id}': {e}")
+            await self._clear_reply_markup(chat_id, message_id)
+
+    async def _clear_reply_markup(self, chat_id: int, message_id: int) -> None:
+        try:
+            logger.debug(f"Attempting to remove keyboard from notification '{message_id}'")
+            await self.bot.edit_message_reply_markup(
+                chat_id=chat_id,
+                message_id=message_id,
+                reply_markup=None,
+            )
+            logger.debug(f"Keyboard removed from notification '{message_id}'")
+        except Exception as e:
+            logger.error(f"Failed to remove keyboard from '{message_id}': {e}")
+
+    async def _broadcast(self, users: Sequence[UserDto], payload: MessagePayloadDto) -> None:
         logger.debug(f"Starting broadcast to '{len(users)}' users")
         await asyncio.gather(
             *(self._send_message(user, payload) for user in users),
             return_exceptions=True,
         )
 
-    async def _send_message(self, user: UserDTO, payload: MessagePayloadDTO) -> Optional[Message]:
+    async def _send_message(self, user: UserDto, payload: MessagePayloadDto) -> Optional[Message]:
         reply_markup = self._prepare_reply_markup(
             payload.reply_markup,
             payload.disable_default_markup,
@@ -158,7 +179,7 @@ class NotificationService(Notifier):
             logger.exception(f"Failed to send notification to '{user.telegram_id}': {e}")
             raise
 
-    def _get_media_method(self, payload: MessagePayloadDTO) -> Optional[Callable[..., Any]]:
+    def _get_media_method(self, payload: MessagePayloadDto) -> Optional[Callable[..., Any]]:
         if payload.is_photo:
             return self.bot.send_photo
 
@@ -214,7 +235,7 @@ class NotificationService(Notifier):
 
     def _get_close_notification_button(self, locale: Locale) -> InlineKeyboardButton:
         text = self._get_translated_text(locale, "btn-notification-close")
-        return InlineKeyboardButton(text=text, callback_data="Notification.CLOSE.state")
+        return InlineKeyboardButton(text=text, callback_data=Notification.CLOSE.state)
 
     def _get_default_keyboard(self, button: InlineKeyboardButton) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder([[button]])
@@ -247,15 +268,11 @@ class NotificationService(Notifier):
 
     async def _schedule_message_deletion(self, chat_id: int, message_id: int, delay: int) -> None:
         logger.debug(f"Schedule msg '{message_id}' deletion in chat '{chat_id}' after '{delay}'s")
-        try:
-            await asyncio.sleep(delay)
-            await self.bot.delete_message(chat_id, message_id)
-            logger.debug(f"Message '{message_id}' in chat '{chat_id}' deleted")
-        except Exception as e:
-            logger.error(f"Failed to delete message '{message_id}' in chat '{chat_id}': {e}")
+        await asyncio.sleep(delay)
+        await self.delete_notification(chat_id, message_id)
 
-    def _get_temp_root(self) -> UserDTO:
-        temp_root = UserDTO(
+    def _get_temp_root(self) -> UserDto:
+        temp_root = UserDto(
             telegram_id=self.config.bot.dev_id,
             name="TempRoot",
             role=UserRole.ROOT,
