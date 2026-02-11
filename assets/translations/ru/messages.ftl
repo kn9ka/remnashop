@@ -690,6 +690,51 @@ msg-remnashop-main = <b>🛍 RemnaShop { $version ->
 msg-admins-main = <b>👮‍♂️ Администраторы</b>
 
 
+# Menu editor
+msg-menu-editor-main =
+    <b>🎛 Редактор кнопок главного меню</b>
+
+    Выберите кнопку для редактирования.
+
+msg-menu-editor-button =
+    <b>🎛 Конфигуратор кнопки</b>
+
+    <blockquote>
+    • <b>Статус</b>: { $is_active -> 
+        [1] 🟢 Включена
+        *[0] 🔴 Выключена
+        }
+    • <b>Текст</b>: { $text }
+    • <b>Доступ</b>: { role }
+    • <b>Тип</b>: { button-type }
+    • <b>Данные</b>: { $payload }
+    
+    </blockquote>
+
+    Выберите пункт для изменения.
+
+msg-menu-editor-button-text =
+    <b>🏷️ Изменить текст кнопки</b>
+
+    Введите текст кнопки (маскимум 32 символа).
+
+msg-menu-editor-button-availability =
+    <b>✴️ Изменить доступ к кнопке</b>
+
+    Выберите роль для доступа к кнопке.
+
+msg-menu-editor-button-type =
+    <b>🔖 Изменить тип кнопки</b>
+
+    Выберите тип кнопки.
+
+msg-menu-editor-button-payload =
+    <b>📄 Изменить данные кнопки</b>
+
+    Введите данные кнопки (для ссылок использовать https).
+
+
+
 # Gateways
 msg-gateways-main = <b>🌐 Платежные системы</b>
 msg-gateways-settings = <b>🌐 Конфигурация { gateway-type }</b>

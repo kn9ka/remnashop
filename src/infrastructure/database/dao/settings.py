@@ -63,9 +63,13 @@ class SettingsDaoImpl(SettingsDao):
 
         for key, value in settings.changed_data.items():
             column = getattr(Settings, key)
-
             if isinstance(value, dict):
-                dumped = {k: self.retort.dump(v, Any) for k, v in value.items()}
+                dumped = {}
+                for k, v in value.items():
+                    if isinstance(v, list):
+                        dumped[k] = [self.retort.dump(item) for item in v]
+                    else:
+                        dumped = {k: self.retort.dump(v, Any) for k, v in value.items()}
                 values_to_update[key] = column.concat(dumped)
             else:
                 values_to_update[key] = self.retort.dump(value)

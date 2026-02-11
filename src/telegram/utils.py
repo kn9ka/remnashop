@@ -8,6 +8,7 @@ from aiogram_dialog.widgets.common.when import Whenable
 from src.application.common.policy import Permission, PermissionPolicy
 from src.application.dto import UserDto
 from src.core.constants import T_ME, USER_KEY
+from src.core.enums import Role
 from src.core.utils.time import datetime_now
 
 
@@ -37,5 +38,17 @@ def require_permission(permission: Permission) -> Callable:
     ) -> bool:
         user: UserDto = manager.middleware_data[USER_KEY]
         return PermissionPolicy.has_permission(user, permission)
+
+    return checker
+
+
+def require_role(role: Role) -> Callable:
+    def checker(
+        data: dict,
+        widget: Whenable,
+        manager: DialogManager,
+    ) -> bool:
+        user: UserDto = manager.middleware_data[USER_KEY]
+        return user.role >= role
 
     return checker

@@ -14,7 +14,7 @@ from magic_filter import F
 from src.application.common.policy import Permission
 from src.core.constants import PAYMENT_PREFIX
 from src.core.enums import BannerName
-from src.telegram.keyboards import connect_buttons
+from src.telegram.keyboards import connect_buttons, custom_buttons
 from src.telegram.routers.dashboard.users.handlers import on_user_search
 from src.telegram.states import Dashboard, MainMenu, Subscription
 from src.telegram.utils import require_permission
@@ -79,6 +79,7 @@ menu = Window(
             url=Format("{support_url}"),
         ),
     ),
+    *custom_buttons,
     Row(
         Start(
             text=I18nFormat("btn-menu.dashboard"),

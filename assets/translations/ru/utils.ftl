@@ -183,12 +183,14 @@ frg-build-info =
 role-owner = Владелец
 role-dev = Разработчик
 role-admin = Администратор
+role-preview = Наблюдатель
 role-user = Пользователь
 role = 
     { $role ->
     [5] { role-owner }
     [4] { role-dev }
     [3] { role-admin }
+    [2] { role-preview }
     *[1] { role-user }
 }
 
@@ -366,6 +368,13 @@ reward-strategy = { $reward_strategy_type ->
     [PERCENT] Процентная
     *[OTHER] { $reward_strategy_type }
     }
+
+button-type = { $button_type ->
+    [URL] Открыть ссылку
+    [COPY] Скопировать текст
+    [WEB_APP] Открыть веб-приложение
+    *[OTHER] { $button_type }
+}
 
 language = { $language ->
     [ar] Арабский

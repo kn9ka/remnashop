@@ -3,14 +3,16 @@ from typing import Optional
 
 from pydantic import SecretStr
 
-from src.core.constants import T_ME
+from src.core.constants import REPOSITORY, T_ME
 from src.core.enums import (
     AccessMode,
+    ButtonType,
     Currency,
     ReferralAccrualStrategy,
     ReferralLevel,
     ReferralRewardStrategy,
     ReferralRewardType,
+    Role,
     SystemNotificationType,
     UserNotificationType,
 )
@@ -114,9 +116,27 @@ class ReferralSettingsDto(TrackableMixin):
 
 
 @dataclass(kw_only=True)
+class MenuButtonDto(TrackableMixin):
+    index: int
+    text: str = "btn-test"
+    type: ButtonType = ButtonType.URL
+    payload: str = REPOSITORY
+    is_active: bool = False
+    required_role: Role = Role.USER
+
+
+@dataclass(kw_only=True)
+class MenuSettingsDto(TrackableMixin):
+    buttons: list[MenuButtonDto] = field(
+        default_factory=lambda: [MenuButtonDto(index=i) for i in range(1, 7)]
+    )
+
+
+@dataclass(kw_only=True)
 class SettingsDto(BaseDto, TrackableMixin, TimestampMixin):
     default_currency: Currency = Currency.XTR
     access: AccessSettingsDto = field(default_factory=AccessSettingsDto)
     requirements: RequirementSettingsDto = field(default_factory=RequirementSettingsDto)
     notifications: NotificationsSettingsDto = field(default_factory=NotificationsSettingsDto)
     referral: ReferralSettingsDto = field(default_factory=ReferralSettingsDto)
+    menu: MenuSettingsDto = field(default_factory=MenuSettingsDto)

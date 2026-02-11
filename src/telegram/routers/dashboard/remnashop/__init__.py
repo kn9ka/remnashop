@@ -1,4 +1,4 @@
-from . import dialog, notifications, plans, referral
+from . import dialog, menu_editor, notifications, plans, referral
 
 __all__ = [
     "dialog",
@@ -6,4 +6,5 @@ __all__ = [
     "referral",
     "notifications",
     "plans",
+    "menu_editor",
 ]

@@ -1,20 +1,54 @@
-from typing import Final
+from typing import Final, Optional
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram_dialog import StartMode
-from aiogram_dialog.widgets.kbd import Row, Start, Url, WebApp
+from aiogram_dialog.widgets.kbd import CopyText, Group, ListGroup, Row, Start, Url, WebApp
 from aiogram_dialog.widgets.text import Format
 from magic_filter import F
 
 from src.core.constants import GOTO_PREFIX, PAYMENT_PREFIX, REPOSITORY, T_ME
-from src.core.enums import PurchaseType
+from src.core.enums import ButtonType, PurchaseType
 from src.telegram.states import DashboardUser, MainMenu, Subscription
 from src.telegram.utils import username_to_url
 from src.telegram.widgets import I18nFormat
 
 CALLBACK_CHANNEL_CONFIRM: Final[str] = "channel_confirm"
 CALLBACK_RULES_ACCEPT: Final[str] = "rules_accept"
+
+
+def build_buttons_row(row: int) -> Group:
+    return Group(
+        ListGroup(
+            Url(
+                text=Format("{item.text}"),
+                url=Format("{item.payload}"),
+                when=F["item"].type == ButtonType.URL,
+            ),
+            CopyText(
+                text=Format("{item.text}"),
+                copy_text=Format("{item.payload}"),
+                when=F["item"].type == ButtonType.COPY,
+            ),
+            WebApp(
+                text=Format("{item.text}"),
+                url=Format("{item.payload}"),
+                when=F["item"].type == ButtonType.WEB_APP,
+            ),
+            id=f"custom_buttons_row_{row}",
+            items=f"row_{row}_buttons",
+            item_id_getter=lambda item: item.index,
+        ),
+        width=2,
+    )
+
+
+custom_buttons = (
+    build_buttons_row(1),
+    build_buttons_row(2),
+    build_buttons_row(3),
+)
+
 
 connect_buttons = (
     WebApp(
@@ -181,7 +215,10 @@ def get_remnashop_update_keyboard() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def get_user_keyboard(telegram_id: int) -> InlineKeyboardMarkup:
+def get_user_keyboard(
+    telegram_id: int,
+    referrer_telegram_id: Optional[int],
+) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.row(
@@ -190,5 +227,13 @@ def get_user_keyboard(telegram_id: int) -> InlineKeyboardMarkup:
             callback_data=f"{GOTO_PREFIX}{DashboardUser.MAIN.state}:{telegram_id}",
         ),
     )
+
+    if referrer_telegram_id:
+        builder.row(
+            InlineKeyboardButton(
+                text="btn-goto.referrer-profile",
+                callback_data=f"{GOTO_PREFIX}{DashboardUser.MAIN.state}:{referrer_telegram_id}",
+            ),
+        )
 
     return builder.as_markup()

@@ -4,6 +4,7 @@ from src.application.use_cases.access import ACCESS_USE_CASES
 from src.application.use_cases.broadcast import BROADCAST_USE_CASES
 from src.application.use_cases.logs import GetLogs
 from src.application.use_cases.menu import GetMenuData
+from src.application.use_cases.menu_editor import MENU_EDITOR_USE_CASES
 from src.application.use_cases.plan import PLAN_USE_CASES
 from src.application.use_cases.redirect import RedirectMenu
 from src.application.use_cases.referral import ValidateReferralCode
@@ -24,6 +25,7 @@ class UseCasesProvider(Provider):
         *REMNAWAVE_USE_CASES,
         *SUBSCRIPTION_USE_CASES,
         *BROADCAST_USE_CASES,
+        *MENU_EDITOR_USE_CASES,
         #
         GetLogs,
         GetMenuData,

@@ -1,10 +1,12 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
-from src.application.common import Interactor
+from fluentogram.exceptions import KeyNotFoundError
+
+from src.application.common import Interactor, TranslatorRunner
 from src.application.common.dao import PlanDao, SettingsDao, SubscriptionDao
 from src.application.common.policy import Permission
-from src.application.dto import PlanDto, SubscriptionDto, UserDto
+from src.application.dto import MenuButtonDto, PlanDto, SubscriptionDto, UserDto
 from src.application.services import BotService
 
 
@@ -15,6 +17,7 @@ class GetMenuDataResultDto:
     available_trial: Optional[PlanDto]
     current_subscription: Optional[SubscriptionDto]
     referral_url: str
+    custom_buttons: list[MenuButtonDto] = field(default_factory=list)
 
 
 class GetMenuData(Interactor[None, GetMenuDataResultDto]):
@@ -26,11 +29,13 @@ class GetMenuData(Interactor[None, GetMenuDataResultDto]):
         settings_dao: SettingsDao,
         subscription_dao: SubscriptionDao,
         bot_service: BotService,
+        i18n: TranslatorRunner,
     ) -> None:
         self.plan_dao = plan_dao
         self.settings_dao = settings_dao
         self.subscription_dao = subscription_dao
         self.bot_service = bot_service
+        self.i18n = i18n
 
     async def _execute(self, actor: UserDto, data: None) -> GetMenuDataResultDto:
         current_subscription = await self.subscription_dao.get_current(actor.telegram_id)
@@ -44,10 +49,21 @@ class GetMenuData(Interactor[None, GetMenuDataResultDto]):
 
         referral_url = await self.bot_service.get_referral_url(actor.referral_code)
 
+        custom_buttons = []
+        for button in settings.menu.buttons:
+            if button.is_active and actor.role.value >= button.required_role.value:
+                try:
+                    translated_text = self.i18n.get(button.text)
+                except KeyNotFoundError:
+                    translated_text = button.text
+                button.text = translated_text
+                custom_buttons.append(button)
+
         return GetMenuDataResultDto(
             is_referral_enabled=is_referral_enabled,
             is_trial_available=actor.is_trial_available,
             available_trial=plan,
             current_subscription=current_subscription,
             referral_url=referral_url,
+            custom_buttons=custom_buttons,
         )

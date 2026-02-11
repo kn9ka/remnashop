@@ -18,6 +18,7 @@ from pydantic import SecretStr, TypeAdapter
 
 from src.application.dto import (
     AccessSettingsDto,
+    MenuSettingsDto,
     MessagePayloadDto,
     NotificationsSettingsDto,
     PlanSnapshotDto,
@@ -25,6 +26,7 @@ from src.application.dto import (
     ReferralSettingsDto,
     RequirementSettingsDto,
 )
+from src.application.dto.settings import MenuButtonDto
 from src.core.enums import MediaType, ReferralLevel, Role
 from src.core.types import AnyKeyboard
 from src.infrastructure.redis.key_builder import StorageKey, serialize_storage_key
@@ -71,8 +73,9 @@ class RetortProvider(Provider):
     def get_conversion_retort(self, retort: Retort) -> ConversionRetort:
         conversion_retort = ConversionRetort(
             recipe=[
-                coercer(dict, MessagePayloadDto, retort.get_loader(MessagePayloadDto)),
                 coercer(Role, Role, lambda v: Role(v)),
+                #
+                coercer(dict, MessagePayloadDto, retort.get_loader(MessagePayloadDto)),
                 #
                 coercer(dict, PlanSnapshotDto, retort.get_loader(PlanSnapshotDto)),
                 coercer(dict, AccessSettingsDto, retort.get_loader(AccessSettingsDto)),
@@ -81,6 +84,9 @@ class RetortProvider(Provider):
                     dict, NotificationsSettingsDto, retort.get_loader(NotificationsSettingsDto)
                 ),
                 coercer(dict, ReferralSettingsDto, retort.get_loader(ReferralSettingsDto)),
+                coercer(dict, MenuSettingsDto, retort.get_loader(MenuSettingsDto)),
+                coercer(dict, MenuButtonDto, retort.get_loader(MenuButtonDto)),
+                #
                 coercer(dict, PriceDetailsDto, retort.get_loader(PriceDetailsDto)),
             ]
         )

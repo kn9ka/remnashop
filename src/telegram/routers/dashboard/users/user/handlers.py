@@ -1,6 +1,7 @@
 from typing import Union
 from uuid import UUID
 
+from adaptix import Retort
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager, ShowMode, StartMode
 from aiogram_dialog.widgets.input import MessageInput
@@ -96,7 +97,7 @@ async def on_role_select(
 ) -> None:
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     target_telegram_id = dialog_manager.dialog_data[TARGET_TELEGRAM_ID]
-    await set_user_role(user, SetUserRoleDto(target_telegram_id, selected_role))
+    await set_user_role(user, SetUserRoleDto(target_telegram_id, Role(selected_role)))
     await redirect.to_main_menu(target_telegram_id)
 
 
@@ -528,6 +529,7 @@ async def on_send(
     callback: CallbackQuery,
     widget: Button,
     dialog_manager: DialogManager,
+    retort: FromDishka[Retort],
     notifier: FromDishka[Notifier],
     send_message_to_user: FromDishka[SendMessageToUser],
 ) -> None:
@@ -538,6 +540,8 @@ async def on_send(
     if not payload:
         await notifier.notify_user(user, i18n_key="ntf-broadcast.content-empty")
         return
+
+    payload = retort.load(payload, MessagePayloadDto)
 
     if is_double_click(dialog_manager, key="message_confirm", cooldown=5):
         success = await send_message_to_user(

@@ -147,6 +147,15 @@ class RemnashopPlans(StatesGroup):
     EXTERNAL_SQUADS = State()
 
 
+class RemnashopMenuEditor(StatesGroup):
+    MAIN = State()
+    BUTTON = State()
+    TEXT = State()
+    AVAILABILITY = State()
+    TYPE = State()
+    PAYLOAD = State()
+
+
 class DashboardRemnawave(StatesGroup):
     MAIN = State()
     USERS = State()

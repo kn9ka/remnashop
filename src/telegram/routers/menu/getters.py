@@ -58,6 +58,9 @@ async def menu_getter(
             "expire_time": None,
             "reset_time": None,
             "connection_url": None,
+            "row_1_buttons": [b for b in menu_data.custom_buttons if b.index in (1, 2)],
+            "row_2_buttons": [b for b in menu_data.custom_buttons if b.index in (3, 4)],
+            "row_3_buttons": [b for b in menu_data.custom_buttons if b.index in (5, 6)],
         }
 
         if not menu_data.current_subscription:

@@ -13,11 +13,9 @@ from dishka import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 from loguru import logger
 
-from src.application.common import Notifier
+from src.application.common import Notifier, TranslatorRunner
 from src.application.common.dao import BroadcastDao, SettingsDao
-from src.application.common.translator import TranslatorRunner
-from src.application.dto import MessagePayloadDto, UserDto
-from src.application.dto.message_payload import MediaDescriptorDto
+from src.application.dto import MediaDescriptorDto, MessagePayloadDto, UserDto
 from src.application.use_cases.broadcast import (
     CancelBroadcast,
     DeleteBroadcast,
@@ -268,11 +266,7 @@ async def on_send(
         raise ValueError("BroadcastAudience not found in dialog data")
 
     if is_double_click(dialog_manager, key="broadcast_confirm", cooldown=10):
-        task_id = await start_broadcast(
-            user,
-            StartBroadcastDto(audience=audience, payload=payload, plan_id=plan_id),
-        )
-
+        task_id = await start_broadcast(user, StartBroadcastDto(audience, payload, plan_id))
         dialog_manager.dialog_data["task_id"] = task_id
         await dialog_manager.switch_to(state=DashboardBroadcast.VIEW)
         return

@@ -42,11 +42,13 @@ class Permission(UpperStrEnum):
     VIEW_NOTIFICATIONS = auto()
     VIEW_LOGS = auto()
     VIEW_AUDIT = auto()
+    VIEW_MENU_EDITOR = auto()
     #
     SETTINGS_REFERRAL = auto()
     SETTINGS_NOTIFICATIONS = auto()
     SETTINGS_REQUIREMENT = auto()
     SETTINGS_ACCESS = auto()
+    SETTINGS_MENU = auto()
     #
     REMNASHOP_PLAN_EDITOR = auto()
     REMNASHOP_LOGS = auto()

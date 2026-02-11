@@ -162,6 +162,16 @@ class UserRegisteredEvent(UserEvent):
     referrer_username: Optional[str] = field(default=None)
     referrer_name: Optional[str] = field(default=None)
 
+    def as_payload(self) -> "MessagePayloadDto":
+        from src.telegram.keyboards import get_user_keyboard  # noqa: PLC0415
+
+        return MessagePayloadDto(
+            i18n_key=self.event_key,
+            i18n_kwargs={**asdict(self)},
+            reply_markup=get_user_keyboard(self.telegram_id, self.referrer_telegram_id),
+            delete_after=None,
+        )
+
     @property
     def event_key(self) -> str:
         return "event-user.registered"

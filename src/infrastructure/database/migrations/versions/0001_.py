@@ -144,6 +144,7 @@ def upgrade() -> None:
         sa.Column("requirements", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column("notifications", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column("referral", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+        sa.Column("menu", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),

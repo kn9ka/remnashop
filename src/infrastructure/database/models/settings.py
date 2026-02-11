@@ -19,3 +19,4 @@ class Settings(BaseSql, TimestampMixin):
     requirements: Mapped[dict[str, Any]]
     notifications: Mapped[dict[str, Any]]
     referral: Mapped[dict[str, Any]]
+    menu: Mapped[dict[str, Any]]

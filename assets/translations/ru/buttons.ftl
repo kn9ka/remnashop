@@ -159,6 +159,7 @@ btn-goto =
     .invite = 👥 Пригласить
     .subscription-renew = 🔄 Продлить подписку
     .user-profile = 👤 Перейти к пользователю
+    .referrer-profile = 🤝 Перейти к рефереру
     .contact-support = 📩 Перейти в поддержку
 
 btn-promocodes =
@@ -198,7 +199,25 @@ btn-remnashop =
     .notifications = 🔔 Уведомления
     .logs = 📄 Логи
     .audit = 🔍 Аудит
+    .menu-editor = 🎛 Редактор кнопок главного меню
 
+btn-menu-editor =
+    .text = 🏷️ Текст
+    .availability = ✴️ Доступ
+    .type = 🔖 Тип
+    .payload = 📄 Данные
+    .confirm = ✅ Сохранить
+
+    .button = { $is_active -> 
+        [1] 🟢 
+        *[0] 🔴 
+    } { $text }
+    
+    .active = { $is_active -> 
+        [1] 🟢 Включена
+        *[0] 🔴 Выключена
+    }
+    
 btn-gateway =
     .title = { gateway-type }
     .setting = { $field }

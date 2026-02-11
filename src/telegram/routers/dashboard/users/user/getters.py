@@ -469,7 +469,9 @@ async def role_getter(
         raise ValueError(f"User '{target_telegram_id}' not found")
 
     roles = [
-        role for role in Role if role != target_user.role and role not in [Role.SYSTEM, Role.OWNER]
+        role
+        for role in Role
+        if role != target_user.role and role not in [Role.SYSTEM, Role.OWNER, Role.PREVIEW]
     ]
     return {"roles": roles}
 

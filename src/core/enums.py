@@ -10,6 +10,12 @@ class UpperStrEnum(StrEnum):
         return name
 
 
+class ButtonType(UpperStrEnum):
+    URL = auto()
+    COPY = auto()
+    WEB_APP = auto()
+
+
 class BroadcastStatus(UpperStrEnum):
     PROCESSING = auto()
     COMPLETED = auto()

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Final, Optional, Self
+from typing import Final, Optional, Self
 
 from aiogram.types import ChatMemberUpdated
 from aiogram.types import User as AiogramUser
@@ -605,7 +605,7 @@ class ChangeUserPoints(Interactor[ChangeUserPointsDto, None]):
 @dataclass(frozen=True)
 class SendMessageToUserDto:
     telegram_id: int
-    payload: dict[str, Any]
+    payload: MessagePayloadDto
 
 
 class SendMessageToUser(Interactor[SendMessageToUserDto, bool]):
@@ -631,13 +631,8 @@ class SendMessageToUser(Interactor[SendMessageToUserDto, bool]):
         support_text = self.i18n.get("message.help")
         support_username = self.config.bot.support_username.get_secret_value()
 
-        payload = data.payload.copy()
-        payload["reply_markup"] = get_contact_support_keyboard(support_username, support_text)
-
-        message = await self.notifier.notify_user(
-            user=target_user,
-            payload=MessagePayloadDto(**payload),
-        )
+        data.payload.reply_markup = get_contact_support_keyboard(support_username, support_text)
+        message = await self.notifier.notify_user(user=target_user, payload=data.payload)
 
         if message:
             logger.info(f"{actor.log} Sent message to user '{data.telegram_id}'")
