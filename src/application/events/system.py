@@ -169,6 +169,7 @@ class UserRegisteredEvent(UserEvent):
             i18n_key=self.event_key,
             i18n_kwargs={**asdict(self)},
             reply_markup=get_user_keyboard(self.telegram_id, self.referrer_telegram_id),
+            disable_default_markup=False,
             delete_after=None,
         )
 

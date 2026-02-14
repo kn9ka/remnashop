@@ -1,12 +1,14 @@
 from typing import Optional, Protocol, runtime_checkable
 
-from src.application.dto import AnyGatewaySettingsDto, PaymentGatewayDto
+from src.application.dto import PaymentGatewayDto
 from src.core.enums import Currency, PaymentGatewayType
 
 
 @runtime_checkable
 class PaymentGatewayDao(Protocol):
     async def create(self, gateway: PaymentGatewayDto) -> PaymentGatewayDto: ...
+
+    async def get_by_id(self, gateway_id: int) -> Optional[PaymentGatewayDto]: ...
 
     async def get_by_type(
         self,
@@ -15,13 +17,13 @@ class PaymentGatewayDao(Protocol):
 
     async def get_active_by_currency(self, currency: Currency) -> list[PaymentGatewayDto]: ...
 
-    async def get_all(self, only_active: bool = False) -> list[PaymentGatewayDto]: ...
-
-    async def update_settings(
+    async def get_all(
         self,
-        gateway_type: PaymentGatewayType,
-        settings: AnyGatewaySettingsDto,
-    ) -> Optional[PaymentGatewayDto]: ...
+        only_active: bool = False,
+        sorted: bool = True,
+    ) -> list[PaymentGatewayDto]: ...
+
+    async def update(self, gateway: PaymentGatewayDto) -> Optional[PaymentGatewayDto]: ...
 
     async def set_active_status(
         self,

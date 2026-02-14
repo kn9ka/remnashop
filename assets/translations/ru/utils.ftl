@@ -289,6 +289,14 @@ gateway-type = { $gateway_type ->
     [CRYPTOMUS] Cryptomus
     [HELEKET] Heleket
     [URLPAY] UrlPay
+    [CRYPTOPAY] CryptoPay
+    [ROBOKASSA] RoboKassa
+    [WATA] WATA
+    [PLATEGA] Platega
+    [PAYMASTER] PayMaster
+    [MULENPAY] MulenPay
+    [PAYPALYCH] PayPalych
+    [FREEKASSA] FreeKassa
     *[OTHER] { $gateway_type }
 }
 

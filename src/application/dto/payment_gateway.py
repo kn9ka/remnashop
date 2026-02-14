@@ -10,18 +10,18 @@ from .base import BaseDto, TrackableMixin
 
 
 @dataclass(kw_only=True)
-class PaymentResult:
+class PaymentResultDto:
     id: UUID
     url: Optional[str] = None
 
 
 @dataclass(kw_only=True)
 class PaymentGatewayDto(BaseDto, TrackableMixin):
-    order_index: int
+    order_index: int = 0
     type: PaymentGatewayType
     currency: Currency
 
-    is_active: bool
+    is_active: bool = False
     settings: Optional["AnyGatewaySettingsDto"] = None
 
     @property
@@ -44,11 +44,11 @@ class GatewaySettingsDto(TrackableMixin):
         return True
 
     @property
-    def settings_list(self) -> list[dict[str, Any]]:
+    def as_list(self) -> list[dict[str, Any]]:
         return [
             {"field": f.name, "value": getattr(self, f.name)}
             for f in fields(self)
-            if f.name not in {"type", "created_at", "updated_at"}
+            if f.name not in {"type", "created_at", "updated_at"} and not f.name.startswith("_")
         ]
 
 

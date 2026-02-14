@@ -237,6 +237,23 @@ class Currency(UpperStrEnum):
     def from_code(cls, code: str) -> Self:
         return cls(code.upper())
 
+    @classmethod
+    def from_gateway_type(cls, gateway_type: PaymentGatewayType) -> "Currency":
+        mapping = {
+            PaymentGatewayType.TELEGRAM_STARS: cls.XTR,
+            PaymentGatewayType.YOOKASSA: cls.RUB,
+            PaymentGatewayType.YOOMONEY: cls.RUB,
+            PaymentGatewayType.ROBOKASSA: cls.RUB,
+            PaymentGatewayType.CRYPTOMUS: cls.USD,
+            PaymentGatewayType.HELEKET: cls.USD,
+            PaymentGatewayType.CRYPTOPAY: cls.USD,
+        }
+
+        try:
+            return mapping[gateway_type]
+        except KeyError:
+            raise ValueError(f"Unknown payment gateway type: '{gateway_type}'")
+
     def amount(self, amount: Union[float, int]) -> str:
         return f"{amount} {self.symbol}"
 

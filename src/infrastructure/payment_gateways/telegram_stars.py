@@ -1,0 +1,36 @@
+import uuid
+from decimal import Decimal
+from uuid import UUID
+
+from aiogram.types import LabeledPrice
+from fastapi import Request
+from loguru import logger
+
+from src.application.dto import PaymentResultDto
+from src.core.enums import TransactionStatus
+
+from .base import BasePaymentGateway
+
+
+class TelegramStarsGateway(BasePaymentGateway):
+    async def handle_create_payment(self, amount: Decimal, details: str) -> PaymentResultDto:
+        prices = [LabeledPrice(label=self.data.currency, amount=int(amount))]
+        payment_id = uuid.uuid4()
+
+        try:
+            payment_url = await self.bot.create_invoice_link(
+                title=details[:32],
+                description=details[:255],
+                payload=str(payment_id),
+                currency=self.data.currency,
+                prices=prices,
+            )
+
+            return PaymentResultDto(id=payment_id, url=payment_url)
+
+        except Exception as exception:
+            logger.exception(f"An unexpected error occurred while creating payment: {exception}")
+            raise
+
+    async def handle_webhook(self, request: Request) -> tuple[UUID, TransactionStatus]:
+        raise NotImplementedError

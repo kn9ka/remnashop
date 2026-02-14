@@ -8,7 +8,7 @@ from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.dao import PaymentGatewayDao
-from src.application.dto import AnyGatewaySettingsDto, PaymentGatewayDto
+from src.application.dto import PaymentGatewayDto
 from src.core.enums import Currency, PaymentGatewayType
 from src.infrastructure.database.models import PaymentGateway
 
@@ -36,13 +36,29 @@ class PaymentGatewayDaoImpl(PaymentGatewayDao):
         )
 
     async def create(self, gateway: PaymentGatewayDto) -> PaymentGatewayDto:
+        stmt = select(func.max(PaymentGateway.order_index))
+        max_index = await self.session.scalar(stmt) or 0
+
         gateway_data = self.retort.dump(gateway)
+        gateway_data["order_index"] = max_index + 1
+
         db_gateway = PaymentGateway(**gateway_data)
         self.session.add(db_gateway)
         await self.session.flush()
 
-        logger.debug(f"Created payment gateway '{gateway.type}'")
+        logger.debug(f"Created payment gateway '{gateway.type}' with index '{max_index + 1}'")
         return self._convert_to_dto(db_gateway)
+
+    async def get_by_id(self, gateway_id: int) -> Optional[PaymentGatewayDto]:
+        stmt = select(PaymentGateway).where(PaymentGateway.id == gateway_id)
+        db_gateway = await self.session.scalar(stmt)
+
+        if db_gateway:
+            logger.debug(f"Payment gateway with id '{gateway_id}' found")
+            return self._convert_to_dto(db_gateway)
+
+        logger.debug(f"Payment gateway with id '{gateway_id}' not found")
+        return None
 
     async def get_by_type(self, gateway_type: PaymentGatewayType) -> Optional[PaymentGatewayDto]:
         stmt = select(PaymentGateway).where(PaymentGateway.type == gateway_type)
@@ -68,8 +84,17 @@ class PaymentGatewayDaoImpl(PaymentGatewayDao):
         logger.debug(f"Retrieved '{len(db_gateways)}' active gateways for currency '{currency}'")
         return self._convert_to_dto_list(db_gateways)
 
-    async def get_all(self, only_active: bool = False) -> list[PaymentGatewayDto]:
-        stmt = select(PaymentGateway).order_by(PaymentGateway.order_index.asc())
+    async def get_all(
+        self,
+        only_active: bool = False,
+        sorted: bool = True,
+    ) -> list[PaymentGatewayDto]:
+        stmt = select(PaymentGateway)
+
+        if sorted:
+            stmt = stmt.order_by(PaymentGateway.order_index.asc())
+        else:
+            stmt = stmt.order_by(PaymentGateway.id.asc())
         if only_active:
             stmt = stmt.where(PaymentGateway.is_active.is_(True))
 
@@ -81,40 +106,40 @@ class PaymentGatewayDaoImpl(PaymentGatewayDao):
         )
         return self._convert_to_dto_list(db_gateways)
 
-    async def update_settings(
-        self,
-        gateway_type: PaymentGatewayType,
-        settings: AnyGatewaySettingsDto,
-    ) -> Optional[PaymentGatewayDto]:
-        if not settings.changed_data:
-            logger.warning("No changes detected in PaymentGateway settings, skipping update")
-            return await self.get_by_type(settings.type)
+    async def update(self, gateway: PaymentGatewayDto) -> Optional[PaymentGatewayDto]:
+        if not gateway.changed_data:
+            logger.warning("No changes detected in gateway, skipping update")
+            return None
 
         values_to_update = {}
 
-        for key, value in settings.changed_data.items():
+        for key, value in gateway.changed_data.items():
             column = getattr(PaymentGateway, key)
-
             if isinstance(value, dict):
-                dumped = {k: self.retort.dump(v, Any) for k, v in value.items()}
+                dumped = {}
+                for k, v in value.items():
+                    if isinstance(v, list):
+                        dumped[k] = [self.retort.dump(item) for item in v]
+                    else:
+                        dumped = {k: self.retort.dump(v, Any) for k, v in value.items()}
                 values_to_update[key] = column.concat(dumped)
             else:
                 values_to_update[key] = self.retort.dump(value)
 
         stmt = (
             update(PaymentGateway)
-            .where(PaymentGateway.type == gateway_type)
+            .where(PaymentGateway.id == gateway.id)
             .values(**values_to_update)
             .returning(PaymentGateway)
         )
-        db_gateway = await self.session.scalar(stmt)
+        db_settings = await self.session.scalar(stmt)
 
-        if db_gateway:
-            logger.debug(f"Settings for gateway '{gateway_type}' updated")
-            return self._convert_to_dto(db_gateway)
+        if not db_settings:
+            logger.warning(f"Failed to update gateway with ID '{gateway.id}': record not found")
+            return None
 
-        logger.warning(f"Failed to update settings: gateway '{gateway_type}' not found")
-        return None
+        logger.debug(f"Gateway '{gateway.id}' updated with keys '{list(values_to_update.keys())}'")
+        return self._convert_to_dto(db_settings)
 
     async def set_active_status(self, gateway_type: PaymentGatewayType, is_active: bool) -> None:
         stmt = (

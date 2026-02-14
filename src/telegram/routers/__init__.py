@@ -22,7 +22,7 @@ def setup_routers(router: Router) -> None:
         dashboard.remnawave.dialog.router,
         #
         dashboard.remnashop.dialog.router,
-        # dashboard.remnashop.gateways.dialog.router,
+        dashboard.remnashop.gateways.dialog.router,
         dashboard.remnashop.referral.dialog.router,
         dashboard.remnashop.notifications.dialog.router,
         dashboard.remnashop.plans.dialog.router,

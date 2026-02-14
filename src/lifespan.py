@@ -17,6 +17,7 @@ from src.application.events import (
     WebhookErrorEvent,
 )
 from src.application.services import CommandService, WebhookService
+from src.application.use_cases.payment_gateway import CreateDefaultPaymentGateway
 from src.core.config import AppConfig
 from src.core.utils.i18n_helpers import i18n_format_seconds
 from src.core.utils.time import get_uptime
@@ -40,7 +41,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         webhook_service = await startup_container.get(WebhookService)
         command_service = await startup_container.get(CommandService)
         remnawave_service = await startup_container.get(Remnawave)
+        create_default_payment_gateway = await startup_container.get(CreateDefaultPaymentGateway)
 
+        await create_default_payment_gateway.system()
         settings = await settings_dao.get()
         allowed_updates = dispatcher.resolve_used_update_types()
         webhook_info: WebhookInfo = await webhook_service.setup_webhook(allowed_updates)

@@ -1,4 +1,4 @@
-from . import dialog, menu_editor, notifications, plans, referral
+from . import dialog, gateways, menu_editor, notifications, plans, referral
 
 __all__ = [
     "dialog",

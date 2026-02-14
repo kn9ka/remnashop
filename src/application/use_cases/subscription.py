@@ -324,8 +324,6 @@ class AddSubscriptionDuration(Interactor[AddSubscriptionDurationDto, None]):
 
             subscription.expire_at = new_expire
             await self.subscription_dao.update(subscription)
-
-            subscription.expire_at = new_expire
             await self.remnawave.update_user(
                 user=target_user,
                 uuid=subscription.user_remna_id,

@@ -24,8 +24,8 @@ class AppConfig(BaseConfig, env_prefix="APP_"):
     host: str = "0.0.0.0"
     port: int = 5000
 
-    locales: LocaleList = LocaleList([Locale.EN])
-    default_locale: Locale = Locale.EN
+    locales: LocaleList = LocaleList([Locale.RU])  # TODO: Change to EN
+    default_locale: Locale = Locale.RU  # TODO: Change to EN
 
     crypt_key: SecretStr
     assets_dir: Path = ASSETS_DIR

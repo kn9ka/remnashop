@@ -78,14 +78,6 @@ remnashop = Window(
             on_click=on_logs_request,
             when=require_permission(Permission.VIEW_LOGS),
         ),
-        Button(
-            text=I18nFormat("btn-remnashop.audit"),
-            id="audit",
-            on_click=show_dev_popup,
-            when=require_permission(Permission.VIEW_AUDIT),
-        ),
-    ),
-    Row(
         Start(
             text=I18nFormat("btn-remnashop.menu-editor"),
             id="menu_editor",

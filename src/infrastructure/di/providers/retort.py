@@ -12,12 +12,13 @@ from adaptix import (
     name_mapping,
 )
 from adaptix._internal.provider.loc_stack_filtering import OriginSubclassLSC
-from adaptix.conversion import ConversionRetort, coercer
+from adaptix.conversion import ConversionRetort, coercer, link_function
 from dishka import Provider, Scope, provide
 from pydantic import SecretStr, TypeAdapter
 
 from src.application.dto import (
     AccessSettingsDto,
+    MenuButtonDto,
     MenuSettingsDto,
     MessagePayloadDto,
     NotificationsSettingsDto,
@@ -26,10 +27,41 @@ from src.application.dto import (
     ReferralSettingsDto,
     RequirementSettingsDto,
 )
-from src.application.dto.settings import MenuButtonDto
-from src.core.enums import MediaType, ReferralLevel, Role
+from src.application.dto.payment_gateway import (
+    CryptomusGatewaySettingsDto,
+    CryptopayGatewaySettingsDto,
+    HeleketGatewaySettingsDto,
+    RobokassaGatewaySettingsDto,
+    YookassaGatewaySettingsDto,
+    YoomoneyGatewaySettingsDto,
+)
+from src.core.enums import MediaType, PaymentGatewayType, ReferralLevel, Role
 from src.core.types import AnyKeyboard
+from src.infrastructure.database.models import PaymentGateway
 from src.infrastructure.redis.key_builder import StorageKey, serialize_storage_key
+
+
+def get_settings_dto(pg_type: PaymentGatewayType, settings_dict: dict) -> Any:
+    type_mapping = {
+        PaymentGatewayType.YOOKASSA: YookassaGatewaySettingsDto,
+        PaymentGatewayType.YOOMONEY: YoomoneyGatewaySettingsDto,
+        PaymentGatewayType.CRYPTOMUS: CryptomusGatewaySettingsDto,
+        PaymentGatewayType.HELEKET: HeleketGatewaySettingsDto,
+        PaymentGatewayType.CRYPTOPAY: CryptopayGatewaySettingsDto,
+        PaymentGatewayType.ROBOKASSA: RobokassaGatewaySettingsDto,
+    }
+
+    dto_class = type_mapping.get(pg_type)
+    if dto_class is None:
+        raise ValueError(f"Unknown gateway type: {pg_type}")
+
+    return dto_class(**settings_dict)
+
+
+def convert_settings(payment_gateway: PaymentGateway) -> Any:
+    if not payment_gateway.settings:
+        return None
+    return get_settings_dto(payment_gateway.type, payment_gateway.settings)
 
 
 class RetortProvider(Provider):
@@ -88,6 +120,19 @@ class RetortProvider(Provider):
                 coercer(dict, MenuButtonDto, retort.get_loader(MenuButtonDto)),
                 #
                 coercer(dict, PriceDetailsDto, retort.get_loader(PriceDetailsDto)),
+                #
+                link_function(convert_settings, "settings"),
+                *[
+                    coercer(dict, dto_class, retort.get_loader(dto_class))
+                    for dto_class in [
+                        YookassaGatewaySettingsDto,
+                        YoomoneyGatewaySettingsDto,
+                        CryptomusGatewaySettingsDto,
+                        HeleketGatewaySettingsDto,
+                        CryptopayGatewaySettingsDto,
+                        RobokassaGatewaySettingsDto,
+                    ]
+                ],
             ]
         )
         return conversion_retort

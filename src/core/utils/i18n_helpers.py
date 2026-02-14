@@ -131,5 +131,4 @@ def i18n_format_expire_time(expiry: Union[timedelta, datetime]) -> list[tuple[st
     if minutes:
         parts.append((TimeUnitKey.MINUTE, {"value": minutes}))
 
-    # Default to 1 minute if everything is zero
     return parts or [("unknown", {"value": 0})]

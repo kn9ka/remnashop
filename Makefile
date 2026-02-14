@@ -52,7 +52,3 @@ endif
 .PHONY: reset
 reset:
 	@:
-
-.PHONY: run-preview
-run-preview:
-	aiogram-dialog-preview src.bot.dispatcher:get_dispatcher_preview

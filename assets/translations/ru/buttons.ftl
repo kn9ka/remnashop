@@ -198,8 +198,7 @@ btn-remnashop =
     .plans = 📦 Планы
     .notifications = 🔔 Уведомления
     .logs = 📄 Логи
-    .audit = 🔍 Аудит
-    .menu-editor = 🎛 Редактор кнопок главного меню
+    .menu-editor = 🎛 Доп. кнопки
 
 btn-menu-editor =
     .text = 🏷️ Текст

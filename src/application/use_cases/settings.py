@@ -12,6 +12,7 @@ from src.core.constants import T_ME
 from src.core.enums import (
     AccessMode,
     AccessRequirements,
+    Currency,
     ReferralAccrualStrategy,
     ReferralLevel,
     ReferralRewardStrategy,
@@ -366,6 +367,29 @@ class UpdateReferralRewardConfig(Interactor[str, None]):
         )
 
 
+class UpdateDefaultCurrency(Interactor[Currency, None]):
+    required_permission = Permission.SETTINGS_CURRENCY
+
+    def __init__(self, uow: UnitOfWork, settings_dao: SettingsDao) -> None:
+        self.uow = uow
+        self.settings_dao = settings_dao
+
+    async def _execute(self, actor: UserDto, currency: Currency) -> None:
+        async with self.uow:
+            settings = await self.settings_dao.get()
+            old_currency = settings.default_currency
+
+            if old_currency == currency:
+                logger.debug(f"Default currency is already set to '{currency}'")
+                return
+
+            settings.default_currency = currency
+            await self.settings_dao.update(settings)
+            await self.uow.commit()
+
+        logger.info(f"{actor.log} Updated default currency from '{old_currency}' to '{currency}'")
+
+
 SETTINGS_USE_CASES: Final[tuple[type[Interactor], ...]] = (
     ChangeAccessMode,
     ToggleConditionRequirement,
@@ -380,4 +404,5 @@ SETTINGS_USE_CASES: Final[tuple[type[Interactor], ...]] = (
     UpdateReferralRewardStrategy,
     UpdateReferralRewardType,
     UpdateRulesRequirement,
+    UpdateDefaultCurrency,
 )

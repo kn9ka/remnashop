@@ -44,8 +44,9 @@ class MovePlanUp(Interactor[int, None]):
                 logger.debug(f"Plan '{plan_id}' moved up one position")
 
             for i, p in enumerate(plans, start=1):
-                p.order_index = i
-                await self.plan_dao.update(p)
+                if p.order_index != i:
+                    p.order_index = i
+                    await self.plan_dao.update(p)
 
             await self.uow.commit()
 

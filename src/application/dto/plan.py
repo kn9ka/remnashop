@@ -49,6 +49,21 @@ class PlanSnapshotDto:
             is_trial=plan.is_trial,
         )
 
+    @classmethod
+    def test(cls) -> "PlanSnapshotDto":
+        return cls(
+            id=-1,
+            name="test",
+            tag=None,
+            type=PlanType.UNLIMITED,
+            traffic_limit=-1,
+            device_limit=-1,
+            duration=-1,
+            traffic_limit_strategy=TrafficLimitStrategy.NO_RESET,
+            internal_squads=[],
+            external_squad=None,
+        )
+
 
 @dataclass(kw_only=True)
 class PlanDto(BaseDto, TrackableMixin, TimestampMixin):

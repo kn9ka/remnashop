@@ -49,7 +49,9 @@ class Permission(UpperStrEnum):
     SETTINGS_REQUIREMENT = auto()
     SETTINGS_ACCESS = auto()
     SETTINGS_MENU = auto()
+    SETTINGS_CURRENCY = auto()
     #
+    REMNASHOP_GATEWAYS = auto()
     REMNASHOP_PLAN_EDITOR = auto()
     REMNASHOP_LOGS = auto()
     #

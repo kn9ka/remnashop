@@ -3,7 +3,12 @@ from .broadcast import BroadcastDto, BroadcastMessageDto
 from .build import BuildInfoDto
 from .message_payload import MediaDescriptorDto, MessagePayloadDto
 from .notification_task import NotificationTaskDto
-from .payment_gateway import AnyGatewaySettingsDto, GatewaySettingsDto, PaymentGatewayDto
+from .payment_gateway import (
+    AnyGatewaySettingsDto,
+    GatewaySettingsDto,
+    PaymentGatewayDto,
+    PaymentResultDto,
+)
 from .plan import PlanDto, PlanDurationDto, PlanPriceDto, PlanSnapshotDto
 from .referral import ReferralDto, ReferralRewardDto
 from .settings import (
@@ -33,6 +38,7 @@ __all__ = [
     "AnyGatewaySettingsDto",
     "GatewaySettingsDto",
     "PaymentGatewayDto",
+    "PaymentResultDto",
     "PlanDto",
     "PlanDurationDto",
     "PlanPriceDto",
