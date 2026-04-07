@@ -111,14 +111,14 @@ btn-users =
     .unblock-all = 🔓 Разблокировать всех
 
 btn-user =
-    .discount = 💸 Изменить скидку
+    .discount = 💸 Скидка
     .discount-personal = 👤 Персональная скидка
     .discount-purchase = 🎟 На следующую покупку
-    .points = 💎 Изменить баллы
+    .points = 💎 Баллы
     .statistics = 📊 Статистика
     .referrals = 👪 Рефералы
     .message = 📩 Сообщение
-    .role = 👮‍♂️ Изменить роль
+    .role = 👮‍♂️ Роль
     .transactions = 🧾 Транзакции
     .give-access = 🔑 Доступ к планам
     .current-subscription = 💳 Текущая подписка

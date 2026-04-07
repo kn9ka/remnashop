@@ -132,6 +132,12 @@ user = Window(
     ),
     Row(
         SwitchTo(
+            text=I18nFormat("btn-user.role"),
+            id="role",
+            state=DashboardUser.ROLE,
+            when=F["is_not_self"] & F["can_edit"],
+        ),
+        SwitchTo(
             text=I18nFormat("btn-user.discount"),
             id="discount",
             state=DashboardUser.DISCOUNT,
@@ -144,12 +150,6 @@ user = Window(
         ),
     ),
     Row(
-        SwitchTo(
-            text=I18nFormat("btn-user.role"),
-            id="role",
-            state=DashboardUser.ROLE,
-            when=F["is_not_self"] & F["can_edit"],
-        ),
         Button(
             text=I18nFormat("btn-user.trial-toggle"),
             id="trial_toggle",
