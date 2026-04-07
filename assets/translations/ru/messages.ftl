@@ -551,9 +551,20 @@ msg-user-give-subscription-duration =
     Выберите длительность выдаваемой подписки.
 
 msg-user-discount =
-    <b>💸 Изменить персональную скидку</b>
+    <b>💸 Изменить скидку</b>
+
+    Выберите тип скидки для изменения.
+
+msg-user-discount-personal =
+    <b>👤 Персональная скидка</b>
 
     Выберите по кнопке или введите свой вариант.
+
+msg-user-discount-purchase =
+    <b>🎟 Скидка на следующую покупку</b>
+
+    Выберите по кнопке или введите свой вариант.
+    Скидка будет применена один раз и сброшена после любого платежа.
 
 msg-user-points =
     <b>💎 Изменить баллы реферальной системы</b>
@@ -1120,6 +1131,17 @@ msg-subscription-details =
     { $final_amount ->
     [0] { empty }
     *[HAS] • <b>Стоимость</b>: { frg-payment-amount }
+    }
+    </blockquote>
+    
+    <blockquote>
+    { $discount_percent ->
+    [0] { empty }
+    *[HAS] <i>Цены указаны с учетом { $is_personal_discount ->
+        [1] вашей персональной скидки { $discount_percent }%
+        *[0] разовой скидки { $discount_percent }%
+        }
+        </i>
     }
     </blockquote>
 

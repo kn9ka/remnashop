@@ -112,6 +112,8 @@ btn-users =
 
 btn-user =
     .discount = 💸 Изменить скидку
+    .discount-personal = 👤 Персональная скидка
+    .discount-purchase = 🎟 На следующую покупку
     .points = 💎 Изменить баллы
     .statistics = 📊 Статистика
     .referrals = 👪 Рефералы
@@ -157,6 +159,11 @@ btn-user =
     *[OTHER] { $status }
     } { $created_at }
     
+    .trial-toggle = { $is_trial_available ->
+    [1] 🧪 Пробник: доступен
+    *[0] 🧪 Пробник: не доступен
+    }
+
     .block = { $is_blocked ->
     [1] 🔓 Разблокировать
     *[0] 🔒 Заблокировать
@@ -447,7 +454,10 @@ btn-subscription =
     .renew = 🔄 Продлить
     .change = 🔃 Изменить
     .promocode = 🎟 Активировать промокод
-    .payment-method = { gateway-type } | { $price } { $currency }
+    .payment-method = { gateway-type } | { $final_amount ->
+    [0] 🎁
+    *[HAS] { $final_amount }{ $currency }
+    }
     .pay = 💳 Оплатить
     .get = 🎁 Получить бесплатно
     .back-plans = ⬅️ Назад к выбору плана
