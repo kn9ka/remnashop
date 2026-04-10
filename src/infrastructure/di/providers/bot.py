@@ -22,9 +22,8 @@ class BotProvider(Provider):
 
         session = None
         if config.bot.proxy_url:
-            proxy = config.bot.proxy_url.get_secret_value()
             logger.info("Using SOCKS5 proxy for Telegram")
-            session = AiohttpSession(proxy=proxy)
+            session = AiohttpSession(proxy=config.bot.proxy_url.get_secret_value())
 
         async with Bot(
             token=config.bot.token.get_secret_value(),
