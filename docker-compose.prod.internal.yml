@@ -47,10 +47,11 @@ services:
       - remnashop-db-data:/var/lib/postgresql/data
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${DATABASE_USER:-remnashop} -d $${DATABASE_NAME:-remnashop}"]
-      interval: 3s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
 
   remnashop-redis:
@@ -72,10 +73,11 @@ services:
       - remnashop-redis-data:/data
 
     healthcheck:
-      test: ["CMD-SHELL", "valkey-cli $${REDIS_PASSWORD:+-a \"$REDIS_PASSWORD\"} ping | grep PONG"]
-      interval: 3s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "if [ -n \"$${REDIS_PASSWORD}\" ]; then export VALKEYCLI_AUTH=\"$${REDIS_PASSWORD}\"; fi; valkey-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
 
   remnashop:
@@ -88,6 +90,13 @@ services:
 
     ports:
       - 127.0.0.1:5000:${APP_PORT:-5000}
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,socket; timeout=3.0; targets=((os.getenv('DATABASE_HOST', 'remnashop-db'), int(os.getenv('DATABASE_PORT', '5432'))), (os.getenv('REDIS_HOST', 'remnashop-redis'), int(os.getenv('REDIS_PORT', '6379'))), (os.getenv('HEALTHCHECK_HOST', '127.0.0.1'), int(os.getenv('APP_PORT', '5000')))); [socket.create_connection((host, port), timeout).close() for host, port in targets]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
     depends_on:
         remnashop-db:
@@ -105,6 +114,13 @@ services:
         taskiq worker src.infrastructure.taskiq.worker:worker
         --ack-type when_received --tasks-pattern src/infrastructure/taskiq/tasks/*.py -fsd
 
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,socket; timeout=3.0; targets=((os.getenv('DATABASE_HOST', 'remnashop-db'), int(os.getenv('DATABASE_PORT', '5432'))), (os.getenv('REDIS_HOST', 'remnashop-redis'), int(os.getenv('REDIS_PORT', '6379')))); [socket.create_connection((host, port), timeout).close() for host, port in targets]"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
     depends_on:
         remnashop-redis:
           condition: service_healthy
@@ -120,6 +136,13 @@ services:
     command: >
         taskiq scheduler src.infrastructure.taskiq.scheduler:scheduler
         --tasks-pattern src/infrastructure/taskiq/tasks/*.py -fsd
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,socket; timeout=3.0; targets=((os.getenv('DATABASE_HOST', 'remnashop-db'), int(os.getenv('DATABASE_PORT', '5432'))), (os.getenv('REDIS_HOST', 'remnashop-redis'), int(os.getenv('REDIS_PORT', '6379')))); [socket.create_connection((host, port), timeout).close() for host, port in targets]"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
     depends_on:
         remnashop-redis:
